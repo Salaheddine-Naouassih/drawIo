@@ -1,0 +1,34 @@
+#container{
+    width:800px;
+    height:600px;
+    position:relative;
+    border:1px solid black;
+        margin-left: 30%;
+
+}
+
+#canvas{
+    position: relative;
+}
+
+#parent{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+            margin-top: 20px;
+
+}
+
+#chat-container{
+    width: 30%;
+    height: 100%;
+    position: relative;
+    /* move to the right */
+    margin-left: 60%;
+    border: 1px solid black;
+}
+
+#msg-ctrl{
+    position: relative;
+    margin-top: 200%;
+}
+
