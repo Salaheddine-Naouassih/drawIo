@@ -46,42 +46,45 @@ document.addEventListener('DOMContentLoaded', (event) => {
     socket.emit("join_room", { room: roomId });
 
     socket.on("draw", (data) => {
-        ctx.fillStyle = data.color;
-        x = data.coordinates.x;
-        y = data.coordinates.y;
-        console.log({ x, y });
-        //create circle 
-        ctx.beginPath();
-        ctx.arc(x, y, 5, 0, 2 * Math.PI);
-        ctx.fill();
-        ctx.closePath();
-
-
-        //let x = data.coordinates.x;
-        //let y = data.coordinates.y;
+        //ctx.fillStyle = data.color;
+        //x = data.coordinates.x;
+        //y = data.coordinates.y;
         //console.log({ x, y });
-        //// Get the current image data
-        //let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        //console.log(imageData);
-        //// Calculate the index of the pixel
-        //let index = (x + y * imageData.width) * 4;
-        //const dataimage = ctx.createImageData(50, 50); // 1x1 pixel
-        //dataimage.data[0] = 255; // Red
-        //dataimage.data[1] = 0; // Green
-        //dataimage.data[2] = 0; // Blue
-        //dataimage.data[3] = 255; // Alp
-        //// Parse the color from data.color (assumed to be in the format "#RRGGBB")
-        //let color = data.color.startsWith('#') ? data.color.slice(1) : data.color;
-        //let r = parseInt(color.slice(0, 2), 16);
-        //let g = parseInt(color.slice(2, 4), 16);
-        //let b = parseInt(color.slice(4, 6), 16);
-        //// Set the pixel color
-        //imageData.data[index + 0] = r; // Red
-        //imageData.data[index + 1] = g; // Green
-        //imageData.data[index + 2] = b; // Blue
-        //imageData.data[index + 3] = 255; // Alpha (255 = fully opaqu
-        //// Put the image data back onto the canvas
-        //ctx.putImageData(dataimage, 50, 50);
+        ////create circle 
+        //ctx.beginPath();
+        //ctx.arc(x, y, 5, 0, 2 * Math.PI);
+        //ctx.fill();
+        //ctx.closePath();
+
+
+        let x = data.coordinates.x;
+        let y = data.coordinates.y;
+        console.log({ x, y });
+        // Get the current image data
+        let imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        console.log(imageData);
+        // Calculate the index of the pixel
+        let index = (x + y * imageData.width) * 4;
+        let thickness = 5;
+        dataimage = ctx.createImageData(thickness, thickness); // 1x1 pixel
+        for (let i = 0; i < dataimage.data.length; i += 4) {
+            dataimage.data[i + 0] = 255; // R value
+            dataimage.data[i + 1] = 0; // G value
+            dataimage.data[i + 2] = 0; // B value
+            dataimage.data[i + 3] = 255; // A value
+        }
+        // Parse the color from data.color (assumed to be in the format "rgb(r, g, b)")
+        let [r, g, b] = data.color.match(/\d+/g);
+
+
+        console.log({ r, g, b });
+        // Set the pixel color
+        imageData.data[index + 0] = r; // Red
+        imageData.data[index + 1] = g; // Green
+        imageData.data[index + 2] = b; // Blue
+        imageData.data[index + 3] = 255; // Alpha (255 = fully opaqu
+        // Put the image data back onto the canvas
+        ctx.putImageData(dataimage, x, y);
 
 
     });
