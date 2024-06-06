@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
     //give me black in rgb code 
 
     let white = "rgb(255, 255, 255)";
-    let black = "rgb(5, 70, 50)";
+    let black = "rgb(0, 0, 0)";
     let color = black;
     eraser.addEventListener("click", function () {
         color != white ? color = white : color = black;
