@@ -38,17 +38,22 @@ export default function Home() {
   useEffect(() => {
     if (socket) return;
     setSocket(io(SOCKET_URL));
+
   }, [roomId]);
 
   const onCreateRoom = () => {
-    axios
-      .post(`${SERVER_URL}/room`)
-      .then((response) => response.data.roomId)
-      .then(setRoomId)
-      .catch((error) => {
-        alert("Something went wrong");
-        console.log(error);
-      });
+    if (socket) {
+      axios
+        .post(`${SERVER_URL}/room`)
+        .then((response) => {
+          setRoomId(response.data.roomId);
+        })
+        .catch((error) => {
+          alert("Something went wrong" + error.message.toString());
+          console.log(error);
+        });
+
+    }
   };
 
   useEffect(() => {
@@ -74,16 +79,22 @@ export default function Home() {
 
     socket.emit("join_room", { room: roomId });
 
+
+
     socket.on("error", (error) => {
       if (error === "Room not found") {
         setRoomId(null);
         alert("Room not found");
       }
+      else {
+        alert("Something went wrong :" + error.message);
+
+      }
     });
 
     canvas.addEventListener("mousedown", function (event) {
       isMouseDown = true;
-      socket.emit("coordinates", {
+      socket.emit("draw", {
         color: drawState.color,
         coordinates: {
           x: event.clientX - rect.left,
@@ -97,7 +108,7 @@ export default function Home() {
 
     canvas.addEventListener("mousemove", function (event) {
       if (isMouseDown) {
-        socket.emit("coordinates", {
+        socket.emit("draw", {
           color: drawState.color,
           coordinates: {
             x: event.clientX - rect.left,
@@ -112,7 +123,7 @@ export default function Home() {
     });
     canvas.addEventListener("mouseup", function () {
       isMouseDown = false;
-      socket.emit("coordinates", { event: "mouseup" });
+      socket.emit("draw", { event: "mouseup" });
     });
 
     socket.on("message", (data) => {
@@ -162,7 +173,6 @@ export default function Home() {
     const value = messageInputRef.current?.value;
     if (!value) return;
     socket && socket.emit("message", { message: value, room: roomId });
-    setMessages((prev) => [...prev, { isUser: true, message: value }]);
     messageInputRef.current!.value = "";
   };
 
@@ -175,7 +185,8 @@ export default function Home() {
   };
   return roomId ? (
     <>
-      <h4>Room link: localhost:5173/${roomId}</h4>
+      <h4> localhost:5173/{roomId}</h4>
+      <h4 >Waiting for players to join...</h4>
       <div id="parent">
         <div ref={containerRef} id="container">
           <canvas ref={canvasRef} id="canvas">
@@ -219,6 +230,7 @@ export default function Home() {
               drawState.color === Color.BLACK ? "black" : "white",
           }}
         >
+          <button id="turn" onClick={() => (socket?.emit("turn", socket.id))}>Turn</button>
           Pen
         </button>
       </div>
