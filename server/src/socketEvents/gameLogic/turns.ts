@@ -38,7 +38,7 @@ async function setTurns(room: Room, socket: Socket, io: any) {
             room.currentTurn = turns.pop() as string;
             const word = fetchWord();
             room.currentWord = word;
-            io.to(room.id).emit("word", word.length);
+            io.to(room.id).emit("wordLength", word.length);
             socket.to(room.currentTurn).emit("yourTurn", { word });
             console.log("currentTurn: ", room.currentTurn)
             console.log("currentWord: ", room.currentWord)
