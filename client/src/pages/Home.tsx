@@ -25,6 +25,9 @@ export default function Home() {
   const [drawState, _] = useState<DrawState>({ color: Color.BLACK });
   const [socket, setSocket] = useState<Socket | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [userCount, setUserCount] = useState<number>(0)
+  const [wordLength, setWordLength] = useState<number>();
+  const [word, setWord] = useState<string>();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const messageInputRef = useRef<HTMLInputElement>(null);
@@ -79,6 +82,10 @@ export default function Home() {
 
     socket.emit("join_room", { room: roomId });
 
+    socket.on("user_count", (data) => {
+      setUserCount(data);
+    });
+
 
 
     socket.on("error", (error) => {
@@ -123,8 +130,18 @@ export default function Home() {
     });
     canvas.addEventListener("mouseup", function () {
       isMouseDown = false;
-      socket.emit("draw", { event: "mouseup" });
+      socket.emit("draw", { event: "mouseup", room: roomId });
     });
+
+    socket.on("yourTurn", (data) => {
+      setWord(data.word);
+    });
+
+    socket.on("wordLength", (data) => {
+      setWordLength(data);
+    });
+
+
 
     socket.on("message", (data) => {
       console.log(data);
@@ -157,7 +174,7 @@ export default function Home() {
       let [r, g, b] = data.color.match(/\d+/g);
 
 
-      console.log({ r, g, b });
+
       // Set the pixel color
       imageData.data[index + 0] = r; // Red
       imageData.data[index + 1] = g; // Green
@@ -186,7 +203,10 @@ export default function Home() {
   return roomId ? (
     <>
       <h4> localhost:5173/{roomId}</h4>
-      <h4 >Waiting for players to join...</h4>
+      {/* waiting for x players */}
+      {userCount < 4 ? <h3>Waiting for {2 - userCount} more players</h3> : <h3>Game is running</h3>}
+      {wordLength ? <h3>Word length: {wordLength}</h3> : null}
+      {word ? <h3>Word: {word}</h3> : null}
       <div id="parent">
         <div ref={containerRef} id="container">
           <canvas ref={canvasRef} id="canvas">
@@ -230,9 +250,10 @@ export default function Home() {
               drawState.color === Color.BLACK ? "black" : "white",
           }}
         >
-          <button id="turn" onClick={() => (socket?.emit("turn", socket.id))}>Turn</button>
+
           Pen
         </button>
+        <button className="ui button" onClick={() => (socket?.emit("turn", socket.id))}>ÜRESSS HEERE</button>
       </div>
     </>
   ) : (

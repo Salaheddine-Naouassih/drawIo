@@ -9,6 +9,7 @@
 
 #canvas{
     position: relative;
+    background-color: white;
 }
 
 #parent{

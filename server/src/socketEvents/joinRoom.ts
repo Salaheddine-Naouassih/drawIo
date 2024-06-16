@@ -1,7 +1,6 @@
 import { Socket } from "socket.io";
 import { authorizeJoin } from "../utils/authorizeJoin";
 import { Room } from "../models/Room";
-import { start } from "repl";
 import { startGame } from "./gameLogic/turns";
 
 
@@ -10,20 +9,23 @@ export function joinRoom(socket: Socket, rooms: Map<string, Room>, socketRooms: 
 
         authorizeJoin(rooms, data, socket).then((room: any) => {
             if (!room) return;
-            if (room.users.length < 4) {
-                console.log(`waiting for ${4 - room.users.length} more players`);
+            if (room.users.length < 2) {
+                console.log(`waiting for ${2 - room.users.length} more players`);
             }
             else {
                 room.running = true;
-                startGame(room);
+                startGame(room, socket, io);
                 console.log("Game is running");
             }
+            socket.emit("user_count", room.users.length);
             socketRooms.set(socket.id, data.room);
             console.log(`Socket ${socket.id} Joined room ${data.room}`);
+            console.log(room)
+
         });
     });
 
-    socket.on("turn", (socketId) => {
+    socket.on("turn", () => {
         const roomId = socketRooms.get(socket.id);
         if (!roomId) return;
         const room = rooms.get(roomId);
@@ -41,13 +43,13 @@ export function disconnect(socket: Socket, rooms: Map<string, Room>, socketRooms
         if (!room) return;
         const userIndex = room.users.findIndex((user) => user.id === socket.id);
         room.users.splice(userIndex, 1);
-        if (room.users.length < 4) room.running = false;
         if (room.users.length === 0) {
             rooms.delete(roomId);
             console.log(`Room ${roomId} deleted`)
 
         };
         console.log(`Socket ${socket.id} disconnecting from room ${roomId}`);
+        socket.disconnect(true);
         console.log(room)
     });
 }

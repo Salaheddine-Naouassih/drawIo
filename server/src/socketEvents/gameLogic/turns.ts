@@ -2,37 +2,57 @@ import { Socket } from "socket.io";
 import { Room } from "../../models/Room";
 import { User } from "../../models/User";
 
-export const startGame = (room: Room) => {
 
+const words = ["hello", "morning", "night", "evening"];
+
+
+export const startGame = async (room: Room, socket: Socket, io: any) => {
     const points = new Map<User, number>();
     room.users.forEach((user: any) => {
         points.set(user.id, 0);
     });
-    const rounds = 3;
+    const rounds = 2;
     for (let i = 0; i < rounds; i++) {
-        setTurn(room);
+        console.log("Round: ", i + 1)
+        await setTurns(room, socket, io);
     }
+    setTimeout(() => {
+        io.to(room.id).emit("next_round",);
 
-
+    },
+        3000);
 }
 
+async function setTurns(room: Room, socket: Socket, io: any) {
+    const turns: string[] = room.users.map(user => user.id);
 
-function setTurn(room: Room) {
-
-    const turns: string[] = [];
-
-    for (let i = 0; i < room.users.length; i++) {
-        turns.push(room.users[i].id);
-    }
-    setInterval(() => {
-        if (turns.length !== 0) {
-            if (room.adminStop !== true) {
-                room.currentTurn = turns.pop() as string;
-                console.log(room.currentTurn);
+    return new Promise<void>((resolve) => {
+        const turn = () => {
+            if (turns.length === 0 || room.adminStop === true) {
+                clearInterval(interval);
+                console.log("Game Over");
+                resolve();
+                return;
             }
-        }
-    }, 20000);
+
+            room.currentTurn = turns.pop() as string;
+            const word = fetchWord();
+            room.currentWord = word;
+            io.to(room.id).emit("word", word.length);
+            socket.to(room.currentTurn).emit("yourTurn", { word });
+            console.log("currentTurn: ", room.currentTurn)
+            console.log("currentWord: ", room.currentWord)
+        };
+
+        const interval = setInterval(turn, 20000);
+        turn(); // Call immediately to start the first turn
+    });
 }
 
 
+function fetchWord() {
+
+    let rand = Math.floor(Math.random() * 10) % words.length;
+    return words[rand];
+}
 

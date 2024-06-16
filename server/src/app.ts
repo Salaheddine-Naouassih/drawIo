@@ -7,7 +7,6 @@ import { Room } from "./models/Room";
 import { joinRoom, disconnect } from "./socketEvents/joinRoom";
 import draw from "./socketEvents/drawing";
 import message from "./socketEvents/messages";
-import { startGame } from "./socketEvents/gameLogic/turns";
 
 export function startServer() {
   const app = express();
@@ -23,8 +22,6 @@ export function startServer() {
     disconnect(socket, rooms, socketRooms, io);
     draw(io, socket, rooms);
     message(io, socket, rooms);
-
-
   });
 
 

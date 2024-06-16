@@ -11,7 +11,6 @@ export const authorizeJoin = async (rooms: Map<string, Room>, data: SocketData, 
     }
     socket.join(data.room);
     room.users.push({ id: socket.id, roomId: data.room });
-    console.log(room)
 
     return room;
 };

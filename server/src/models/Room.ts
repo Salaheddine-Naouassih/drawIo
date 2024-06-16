@@ -6,4 +6,5 @@ export interface Room {
     running: boolean;
     currentTurn: string;
     adminStop: boolean;
+    currentWord?: string;
 }
