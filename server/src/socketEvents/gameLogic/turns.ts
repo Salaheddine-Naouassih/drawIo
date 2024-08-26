@@ -6,7 +6,7 @@ import { User } from "../../models/User";
 const words = ["hello", "morning", "night", "evening"];
 
 
-export const startGame = async (room: Room, socket: Socket, io: any) => {
+export const startGame = (room: Room, socket: Socket, io: any) => {
     const points = new Map<User, number>();
     room.users.forEach((user: any) => {
         points.set(user.id, 0);
@@ -14,7 +14,7 @@ export const startGame = async (room: Room, socket: Socket, io: any) => {
     const rounds = 2;
     for (let i = 0; i < rounds; i++) {
         console.log("Round: ", i + 1)
-        await setTurns(room, socket, io);
+        setTurns(room, socket, io);
     }
     setTimeout(() => {
         io.to(room.id).emit("next_round",);
@@ -44,7 +44,7 @@ async function setTurns(room: Room, socket: Socket, io: any) {
             console.log("currentWord: ", room.currentWord)
         };
 
-        const interval = setInterval(turn, 20000);
+        const interval = setInterval(turn, 5000);
         turn(); // Call immediately to start the first turn
     });
 }

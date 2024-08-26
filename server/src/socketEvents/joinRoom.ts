@@ -42,14 +42,18 @@ export function disconnect(socket: Socket, rooms: Map<string, Room>, socketRooms
         const room = rooms.get(roomId);
         if (!room) return;
         const userIndex = room.users.findIndex((user) => user.id === socket.id);
-        room.users.splice(userIndex, 1);
-        if (room.users.length === 0) {
+        
+        if (room.users.length == 1) {
+            room.users.splice(userIndex, 1);
             rooms.delete(roomId);
             console.log(`Room ${roomId} deleted`)
+        }
+        else {
+            room.users.splice(userIndex, 1);
+        }
 
-        };
+        
         console.log(`Socket ${socket.id} disconnecting from room ${roomId}`);
         socket.disconnect(true);
-        console.log(room)
     });
 }
