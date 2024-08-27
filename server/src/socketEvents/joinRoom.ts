@@ -19,7 +19,7 @@ export function joinRoom(socket: Socket, rooms: Map<string, Room>, socketRooms: 
                     startGame(room, socket, io);
                 });
             }
-            socket.emit("user_count", room.users.length);
+            io.emit("user_count", room.users.length);
             socketRooms.set(socket.id, data.room);
             console.log(`Socket ${socket.id} Joined room ${data.room}`);
             console.log(room)

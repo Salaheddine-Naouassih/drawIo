@@ -204,7 +204,7 @@ export default function Home() {
     <>
       <h4> localhost:5173/{roomId}</h4>
       {/* waiting for x players */}
-      {userCount < 4 ? <h3>Waiting for {2 - userCount} more players</h3> : <h3>Game is running</h3>}
+      {userCount < 2 ? <h3>Waiting for {2 - userCount} more players</h3> : <h3>Game is running</h3>}
       {wordLength ? <h3>Word length: {wordLength}</h3> : null}
       {word ? <h3>Word: {word}</h3> : null}
       <div id="parent">
