@@ -8,6 +8,7 @@ import { joinRoom, disconnect } from "./socketEvents/joinRoom";
 import draw from "./socketEvents/drawing";
 import message from "./socketEvents/messages";
 
+
 export function startServer() {
   const app = express();
   const server = http.createServer(app);
@@ -35,6 +36,7 @@ export function startServer() {
       adminStop: false,
     });
     res.json({ roomId });
+    console.log(rooms);
   });
 
   app.get("/:roomId", (req, res) => {

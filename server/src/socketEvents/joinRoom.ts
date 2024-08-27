@@ -14,8 +14,10 @@ export function joinRoom(socket: Socket, rooms: Map<string, Room>, socketRooms: 
             }
             else {
                 room.running = true;
-                startGame(room, socket, io);
-                console.log("Game is running");
+                console.log("Game ready to start");
+                socket.on("start_game", () => {
+                    startGame(room, socket, io);
+                });
             }
             socket.emit("user_count", room.users.length);
             socketRooms.set(socket.id, data.room);
